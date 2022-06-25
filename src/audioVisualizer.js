@@ -26,10 +26,14 @@ class AudioVisualizer extends Component {
             const y = (item / 255.0) * height;
             context.lineTo(x, y);
             x += sliceWidth;
-          }
+          } 
 
         context.lineTo(x, height / 2);
         context.stroke();
+    }
+
+    point(x, y, canvas){
+      canvas.fillRect(x,y,4,4);
     }
 
 
@@ -39,7 +43,7 @@ class AudioVisualizer extends Component {
     
 
     render() {
-        return <canvas width="300" height="300" ref={this.canvas}/>;
+        return <canvas width="512" height="512" ref={this.canvas}/>;
       }
 
  
