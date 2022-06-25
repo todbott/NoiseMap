@@ -109,7 +109,7 @@ class App extends Component {
         {this.state.audio ? <AudioAnalyzer audio={this.state.audio} atEverySecond={this.atEverySecond}/> : ''}
         {frequencyArray.map((value) => (
           <div>
-            {value}
+            {value} 
           </div>
         ))}
       </div>
