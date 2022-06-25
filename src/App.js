@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import AudioAnalyzer from './audioAnalyzer';
+import { putNoiseReading } from './services/BackendConnector';
 
 class App extends Component {
   constructor(props) {
@@ -8,7 +9,9 @@ class App extends Component {
       audio: null,
       seconds: 0,
       samplingInProgress: false,
-      audioArray: Array(1024).fill(0)
+      audioArray: Array(1024).fill(0),
+      latitude: 0,
+      longitude: 0
     };
     this.toggleMicrophone = this.toggleMicrophone.bind(this);
   }
@@ -26,7 +29,7 @@ class App extends Component {
     this.setState({ audio: null });
   }
 
-  toggleMicrophone() {
+  async toggleMicrophone() {
 
     this.getMicrophone();
     this.setState({samplingInProgress: true})
@@ -34,12 +37,38 @@ class App extends Component {
         this.setState({seconds: this.state.seconds + 1})
         console.log(this.state.seconds)
     }, 1000);
-    setTimeout(() => {
-      this.stopMicrophone()
-      clearInterval(interval)
-      this.setState({samplingInProgress: false})
-    }, 11000);
+
+    let wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+    await wait(11000);
+    this.stopMicrophone()
+    clearInterval(interval)
+    this.setState({samplingInProgress: false})
+    let data = {
+      lat: this.state.latitude,
+      long: this.state.longitude,
+      reading: this.state.audioArray,
+      date: new Date().toISOString().split("T")[0]
+    }
+    await putNoiseReading(data).then((res) => console.log(res))  
   }
+
+  async componentDidMount() {
+
+    await this.position()
+      
+
+
+  }
+
+
+  position = async () => {
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        this.setState({latitude: position.coords.latitude})
+        this.setState({longitude: position.coords.longitude})
+      })
+    }
 
   atEverySecond = (val) => {
     
@@ -47,9 +76,6 @@ class App extends Component {
 
     // What are the values this time around?
     let  newValues = val
-
-    console.log(values[0])
-    console.log(newValues[0])
 
     for (let v = 0; v < values.length; v++) {
       if (newValues[v] > values[v]) {
