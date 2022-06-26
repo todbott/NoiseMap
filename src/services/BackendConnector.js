@@ -10,17 +10,18 @@ Amplify.configure(awsconfig);
 
 
 export async function putNoiseReading(data) {
-
-  return await API.graphql(graphqlOperation(createNoiseReading, { input: data }));
+    try {
+        return await API.graphql(graphqlOperation(createNoiseReading, { input: data }));
+    } catch (err) { console.log(err)}
 }
 
-// export async function GetData() {
-//   try {
-//     const billData = await API.graphql(graphqlOperation(listBillData))
-//     return billData.data.listBillData.items
+export async function getNoiseReadings() {
+  try {
+    const nR = await API.graphql(graphqlOperation(listNoiseReadings))
+    return nR.data.listNoiseReadings.items
   
-//   } catch (err) { console.log(err) }
-// }
+  } catch (err) { console.log(err) }
+}
 
 // export async function PutData(data) {
 //   console.log(data)

@@ -3,10 +3,21 @@
   "serviceConfiguration": {
     "apiName": "noisemap",
     "serviceName": "AppSync",
-    "gqlSchemaPath": "/home/todbott/Documents/NoiseMapRealtime/react-web-audio/amplify/backend/api/noisemap/schema.graphql",
+    "gqlSchemaPath": "/tmp/amplify-b5fc7cdc-e88c-4f19-ae7a-66de4f4c2942/amplify/backend/api/noisemap/schema.graphql",
     "defaultAuthType": {
       "mode": "API_KEY",
-      "expirationTime": 7
-    }
+      "keyDescription": "api key description",
+      "expirationTime": 30
+    },
+    "conflictResolution": {
+      "defaultResolutionStrategy": {
+        "type": "AUTOMERGE"
+      }
+    },
+    "additionalAuthTypes": [
+      {
+        "mode": "AWS_IAM"
+      }
+    ]
   }
 }
