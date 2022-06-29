@@ -1,19 +1,54 @@
 import React, { Component } from 'react';
 import AudioAnalyzer from './audioAnalyzer';
 import { putNoiseReading } from './services/BackendConnector';
+import Container from 'react-bootstrap/Container'
+import Modal from 'react-bootstrap/Modal'
+import Button from 'react-bootstrap/Button';
+import MySpinner from './components/MySpinner';
+import Form from 'react-bootstrap/Form'
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       audio: null,
-      seconds: 0,
+      seconds: 10,
       samplingInProgress: false,
       audioArray: Array(1024).fill(0),
       latitude: 0,
-      longitude: 0
+      longitude: 0,
+      showSpinner: false,
+      showModal: false,
+      pin: ""
     };
     this.toggleMicrophone = this.toggleMicrophone.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handlePinChange = this.handlePinChange.bind(this);
+    this.handleClose = this.handleClose.bind(this)
+  }
+
+
+  handleSubmit(event) {
+    event.preventDefault();
+    this.setState({showSpinner: true})
+    let data = {
+      lat: this.state.latitude,
+      long: this.state.longitude,
+      reading: this.state.audioArray,
+      date: new Date().toISOString().split("T")[0]
+    }
+    //await putNoiseReading(data).then((res) => console.log(res))  
+    console.log(data)
+    this.setState({showSpinner: false})
+    this.setState({showModal: false})
+  }
+
+  handlePinChange(e) {
+    this.setState({pin: e.target.value})
+  }
+
+  handleClose() {
+    this.setState({showModal: false})
   }
 
   async getMicrophone() {
@@ -34,7 +69,7 @@ class App extends Component {
     this.getMicrophone();
     this.setState({samplingInProgress: true})
     const interval = setInterval(() => {
-        this.setState({seconds: this.state.seconds + 1})
+        this.setState({seconds: this.state.seconds - 1})
         console.log(this.state.seconds)
     }, 1000);
 
@@ -44,21 +79,11 @@ class App extends Component {
     this.stopMicrophone()
     clearInterval(interval)
     this.setState({samplingInProgress: false})
-    let data = {
-      lat: this.state.latitude,
-      long: this.state.longitude,
-      reading: this.state.audioArray,
-      date: new Date().toISOString().split("T")[0]
-    }
-    await putNoiseReading(data).then((res) => console.log(res))  
+    this.setState({showModal: true})
   }
 
   async componentDidMount() {
-
     await this.position()
-      
-
-
   }
 
 
@@ -89,11 +114,38 @@ class App extends Component {
 
 
   render() {
-
-    const frequencyArray = this.state.audioArray.toString().split(",")
   
     return (
-      <div className="App">
+        <div className="app">
+        <Modal show={this.state.showModal} onHide={this.handleClose}>
+            <Modal.Header closeButton>
+                <Modal.Title>{this.state.modalTitle}</Modal.Title>
+            </Modal.Header>
+                <Modal.Body>
+                    Your 10-second recording has been captured.  Enter your pin and click "Send" to send it to the database.
+                    <Form>
+                      <Form.Group className="mb-3" controlId="formBasicPassword">
+                        <Form.Label>PIN</Form.Label>
+                        <Form.Control type="password" placeholder="Pin" onChange={this.handlePinChange}/>
+                      </Form.Group>
+                      
+                      <Button variant="primary" type="submit" onClick={this.handleSubmit}>
+                        Send
+                      </Button>
+                    </Form>
+                </Modal.Body>
+            <Modal.Footer>
+            <Button variant="secondary" onClick={this.handleClose}>
+              Cancel
+            </Button>
+            </Modal.Footer>
+        </Modal>
+          { this.state.showSpinner ? 
+            (
+              <MySpinner />
+            ) : (<></>)
+          }
+        
         <div className="controls">
         { this.state.samplingInProgress == false ? 
           (
@@ -102,16 +154,12 @@ class App extends Component {
             </button>
           ) : 
           (
-            <div>Sampling in progress</div>
+            <div>Sampling in progress: {this.state.seconds}</div>
           )
         }       
         </div>
         {this.state.audio ? <AudioAnalyzer audio={this.state.audio} atEverySecond={this.atEverySecond}/> : ''}
-        {frequencyArray.map((value) => (
-          <div>
-            {value} 
-          </div>
-        ))}
+        
       </div>
     );
   }

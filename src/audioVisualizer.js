@@ -1,49 +1,30 @@
 import React, { Component } from 'react';
+import './audioVisualizer.css'
+import { gsap } from 'gsap' 
+
+
 
 class AudioVisualizer extends Component {
     constructor(props) {
         super(props);
-        this.canvas = React.createRef();
+        this.box = React.createRef();
       }
 
-      draw() {
-        const { audioData } = this.props;
-        const canvas = this.canvas.current;
-        const height = canvas.height;
-        const width = canvas.width;
-        const context = canvas.getContext('2d');
-        let x = 0;
-        const sliceWidth = (width * 1.0) / audioData.length;
-
-        context.lineWidth = 2;
-        context.strokeStyle = '#000000';
-        context.clearRect(0, 0, width, height);
-
-        context.beginPath();
-        context.moveTo(0, height / 2);
-
-        for (const item of audioData) {
-            const y = (item / 255.0) * height;
-            context.lineTo(x, y);
-            x += sliceWidth;
-          } 
-
-        context.lineTo(x, height / 2);
-        context.stroke();
-    }
-
-    point(x, y, canvas){
-      canvas.fillRect(x,y,4,4);
-    }
-
-
-    componentDidUpdate() {
-        this.draw();
+    componentDidMount() {
+        gsap.to(this.box.current, { rotation: this.props.audioData[0] });
       }
     
+    componentDidUpdate() {
+      gsap.to(this.box.current, {backgroundColor: `rgb(${this.props.audioData[0]},0,0)`, duration:0.5});
+    }
+
 
     render() {
-        return <canvas width="512" height="512" ref={this.canvas}/>;
+
+
+        return <span className="dot" ref={this.box}></span>;
+      
+        
       }
 
  

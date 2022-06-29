@@ -9,9 +9,8 @@ import NoiseReadings from './NoiseReadings';
 const routing = (  
     <Router>  
       <div>  
-        <h1>Choose</h1>  
         <Routes>
-        <Route exact path="/index" element={<App />} />  
+        <Route exact path="/" element={<App />} />  
         <Route exact path="/noise_readings" element={<NoiseReadings />} />  
         </Routes>
       </div>  
