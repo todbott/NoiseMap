@@ -28,19 +28,23 @@ class App extends Component {
   }
 
 
-  handleSubmit(event) {
+  async handleSubmit(event) {
     event.preventDefault();
-    this.setState({showSpinner: true})
-    let data = {
-      lat: this.state.latitude,
-      long: this.state.longitude,
-      reading: this.state.audioArray,
-      date: new Date().toISOString().split("T")[0]
+    if (process.env.REACT_APP_PINS.includes(this.state.pin)) {
+      this.setState({showSpinner: true})
+      let data = {
+        lat: this.state.latitude,
+        long: this.state.longitude,
+        reading: this.state.audioArray,
+        date: new Date().toISOString().split("T")[0]
+      }
+      await putNoiseReading(data).then((res) => console.log(res))  
+      console.log(data)
+      this.setState({showSpinner: false})
     }
-    //await putNoiseReading(data).then((res) => console.log(res))  
-    console.log(data)
-    this.setState({showSpinner: false})
+    
     this.setState({showModal: false})
+    this.setState({seconds: 10})
   }
 
   handlePinChange(e) {

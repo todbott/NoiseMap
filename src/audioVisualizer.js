@@ -11,12 +11,15 @@ class AudioVisualizer extends Component {
       }
 
     componentDidMount() {
-        gsap.to(this.box.current, { rotation: this.props.audioData[0] });
+        gsap.to(this.box.current, { rotation: 360, duration: 1 });
       }
     
     componentDidUpdate() {
-      gsap.to(this.box.current, {backgroundColor: `rgb(${this.props.audioData[0]},0,0)`, duration:0.5});
-    }
+      gsap.to(this.box.current, { backgroundColor: `rgb(${this.props.audioData[0]},${this.props.audioData[500]},${this.props.audioData[1000]})`, 
+                                  duration:1,
+                                  width: this.props.audioData[0],
+                                  height: this.props.audioData[0]});
+                                }
 
 
     render() {

@@ -25,10 +25,6 @@ class AudioAnalyzer extends Component {
 
         this.source.connect(this.analyser);
         this.rafId = requestAnimationFrame(this.tick);
-
-        
-
-
       }
 
      
@@ -44,7 +40,11 @@ class AudioAnalyzer extends Component {
 
       render() {
         
-        return <AudioVisualizer audioData={this.state.audioData} />;
+        return (
+        <div className="controls">
+          <AudioVisualizer audioData={this.state.audioData} />
+        </div>
+        )
       }
  
 }
