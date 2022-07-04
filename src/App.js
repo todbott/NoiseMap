@@ -13,6 +13,7 @@ class App extends Component {
     this.state = {
       audio: null,
       seconds: 10,
+      samples: 0,
       samplingInProgress: false,
       audioArray: Array(1024).fill(0),
       latitude: 0,
@@ -24,12 +25,11 @@ class App extends Component {
     this.toggleMicrophone = this.toggleMicrophone.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handlePinChange = this.handlePinChange.bind(this);
-    this.handleClose = this.handleClose.bind(this)
+    this.handleClose = this.handleClose.bind(this);
+    this.handleNumberChange = this.handleNumberChange.bind(this);
   }
 
-
-  async handleSubmit(event) {
-    event.preventDefault();
+  async sendToBackend() {
     if (process.env.REACT_APP_PINS.includes(this.state.pin)) {
       this.setState({showSpinner: true})
       let data = {
@@ -41,7 +41,12 @@ class App extends Component {
       await putNoiseReading(data).then((res) => console.log(res))  
       console.log(data)
       this.setState({showSpinner: false})
+      this.setState({seconds: 10})
     }
+  }
+
+  async handleSubmit(event) {
+    event.preventDefault();
     
     this.setState({showModal: false})
     this.setState({seconds: 10})
@@ -49,6 +54,10 @@ class App extends Component {
 
   handlePinChange(e) {
     this.setState({pin: e.target.value})
+  }
+
+  handleNumberChange(e) {
+    this.setState({samples: e.target.value})
   }
 
   handleClose() {
@@ -70,24 +79,40 @@ class App extends Component {
 
   async toggleMicrophone() {
 
-    this.getMicrophone();
-    this.setState({samplingInProgress: true})
-    const interval = setInterval(() => {
-        this.setState({seconds: this.state.seconds - 1})
-        console.log(this.state.seconds)
-    }, 1000);
+    
+    if (process.env.REACT_APP_PINS.includes(this.state.pin)) {
+      for (let t=0; t<this.state.samples; t++) {
 
-    let wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+        this.setState({samplingInProgress: true})
+        await this.position()
+        
+        this.getMicrophone();
+      
+        
+        const interval = setInterval(() => {
+            this.setState({seconds: this.state.seconds - 1})
+            console.log(this.state.seconds)
+        }, 1000);
 
-    await wait(11000);
-    this.stopMicrophone()
-    clearInterval(interval)
-    this.setState({samplingInProgress: false})
-    this.setState({showModal: true})
+        let wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+        await wait(11000);
+        this.stopMicrophone()
+        clearInterval(interval)
+        await this.sendToBackend();
+      }
+      this.setState({samplingInProgress: false})
+    }
+    
   }
 
   async componentDidMount() {
     await this.position()
+    const audio = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: false
+    });
+    this.setState({showModal: true})
   }
 
 
@@ -126,15 +151,18 @@ class App extends Component {
                 <Modal.Title>{this.state.modalTitle}</Modal.Title>
             </Modal.Header>
                 <Modal.Body>
-                    Your 10-second recording has been captured.  Enter your pin and click "Send" to send it to the database.
+                    10 second samples will now be gathered consecutively.  Choose how many samples you want to gather, then enter your pin and click "Set", then click the "Start sampling" button.
                     <Form>
                       <Form.Group className="mb-3" controlId="formBasicPassword">
                         <Form.Label>PIN</Form.Label>
                         <Form.Control type="password" placeholder="Pin" onChange={this.handlePinChange}/>
                       </Form.Group>
-                      
+                      <Form.Group className="mb-3" controlId="sampleNumber">
+                        <Form.Label>Number of samples</Form.Label>
+                        <Form.Control type="email" placeholder="number" onChange={this.handleNumberChange}/>
+                      </Form.Group>
                       <Button variant="primary" type="submit" onClick={this.handleSubmit}>
-                        Send
+                        Set
                       </Button>
                     </Form>
                 </Modal.Body>
