@@ -71,12 +71,13 @@ export default function FeatureGetter(features) {
       ]
 
     features.forEach(element => {
-        console.log('one element--')
+        //console.log('one element--')
         let propertiesObject = element['properties']
+        console.log(propertiesObject)
 
         uniqueKeys.forEach(k => {
             if (propertiesObject[k]) {
-                console.log(`${k}: ${propertiesObject[k]}`)
+                //console.log(`${k}: ${propertiesObject[k]}`)
             }
         })
        

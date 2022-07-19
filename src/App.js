@@ -71,10 +71,10 @@ class App extends Component {
       // This gets our bounding box
       let lat = this.state.latitude
       let long = this.state.longitude
-      let n  = lat  + (10 / 6371000.0) * (180 / Math.PI);
-      let s = lat  + (-10 / 6371000.0) * (180 / Math.PI);
-      let e = long + (10 / 6371000.0) * (180 / Math.PI) / Math.cos(lat * Math.PI/180);
-      let w = long + (-10 / 6371000.0) * (180 / Math.PI) / Math.cos(lat * Math.PI/180);
+      let n  = lat  + (100 / 6371000.0) * (180 / Math.PI);
+      let s = lat  + (-100 / 6371000.0) * (180 / Math.PI);
+      let e = long + (100 / 6371000.0) * (180 / Math.PI) / Math.cos(lat * Math.PI/180);
+      let w = long + (-100 / 6371000.0) * (180 / Math.PI) / Math.cos(lat * Math.PI/180);
 
       // we use SWNE order
       let query = `[out:json];way(${s},${w},${n},${e});(._;>;);out;`
