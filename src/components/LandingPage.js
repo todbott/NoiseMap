@@ -60,7 +60,7 @@ class LandingPage extends React.Component {
                                                         <p className="hero-paragraph">Predict levels of urban noise using the power of AI</p>
                                                     {/* </div>
                                                 </div> */}
-                                                <iframe width="560" height="315" src="https://www.youtube.com/embed/vu4FpbAdP_Q" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                                <iframe width="560" height="315" src="https://www.youtube.com/embed/EHLWsS3g0xQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                                             </div>
                                         </div>
                                 </div>
